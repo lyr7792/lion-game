@@ -1899,6 +1899,11 @@ function logoSVG(){return `<svg viewBox="0 0 760 214" class="logo" aria-label="L
   <path d="M0,-8 C6,0 5,7 0,14 C-5,7 -6,0 0,-8Z" fill="#fff3d0" opacity=".85"/></g>
  <rect x="40" y="186" width="680" height="1.5" fill="url(#rl)"/><rect x="370" y="181" width="11" height="11" transform="rotate(45 375.5 186.5)" fill="#e2702c"/>
 </svg>`;}
+let PWA_EVT=null;const IOS_WEB=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!navigator.standalone&&location.protocol==='https:';
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();PWA_EVT=e;if(view==='title')render();});
+addEventListener('appinstalled',()=>{PWA_EVT=null;if(view==='title')render();});
+async function installApp(){if(PWA_EVT){PWA_EVT.prompt();try{await PWA_EVT.userChoice;}catch(e){}PWA_EVT=null;render();return;}
+  toast('<div class="big" style="font-size:20px">아이폰에 설치하기</div><p>사파리 아래쪽 <b>공유 버튼</b>(네모에 위 화살표) → <b>홈 화면에 추가</b> → 추가.</p><p class="sub">카카오톡·네이버 앱 안에서 열었다면 먼저 사파리로 열어야 해.</p>');}
 function titleHTML(){const sv=store.get(SAVE_KEY);
   const item=(label,fn,dis,sub)=>`<button class="mitem" ${dis?'disabled':''} onclick="${fn}">${label}${sub?`<small>${sub}</small>`:''}</button>`;
   let panel='';
@@ -1923,7 +1928,7 @@ function titleHTML(){const sv=store.get(SAVE_KEY);
    <div class="tbanner">${logoSVG()}<div class="tagline">잿빛 군단은 너를 기억한다</div>${kingPanelHTML()}
     <nav class="menu">
      ${confirmNew?`<div class="warn" style="margin-bottom:6px">이어하던 판이 지워져. 정말 새로 시작할까?</div>${item('네, 새로 시작','startNew()')}${item('아니','confirmNew=false;render()')}`:
-     item('새로운 게임','startNew()').replace('class="mitem"','class="mitem lead"')+item('이어하기','loadGame()',!sv,sv&&sv.cur?`${sv.cur.split('-')[0]}막 · 체력 ${sv.hp}/${sv.maxHp}`:'')+'<div class="menudiv"></div>'+item('기록',"menuPanel=menuPanel==='records'?null:'records';render()")+item('설정',"menuPanel=menuPanel==='settings'?null:'settings';render()")+item('왕좌',"menuPanel=menuPanel==='throne'?null:'throne';render()",false,KING?`${KING.gen}대 ${KING.name}`:'비어 있음')+item('백과사전',"menuPanel=menuPanel==='codex'?null:'codex';render()")+item('패치 노트',"menuPanel=menuPanel==='patch'?null:'patch';render()",false,'v1.6.3')+'<div class="menudiv"></div>'+item('종료',"menuPanel='bye';render();setTimeout(()=>window.close(),1200)")}
+     item('새로운 게임','startNew()').replace('class="mitem"','class="mitem lead"')+item('이어하기','loadGame()',!sv,sv&&sv.cur?`${sv.cur.split('-')[0]}막 · 체력 ${sv.hp}/${sv.maxHp}`:'')+'<div class="menudiv"></div>'+item('기록',"menuPanel=menuPanel==='records'?null:'records';render()")+item('설정',"menuPanel=menuPanel==='settings'?null:'settings';render()")+item('왕좌',"menuPanel=menuPanel==='throne'?null:'throne';render()",false,KING?`${KING.gen}대 ${KING.name}`:'비어 있음')+item('백과사전',"menuPanel=menuPanel==='codex'?null:'codex';render()")+item('패치 노트',"menuPanel=menuPanel==='patch'?null:'patch';render()",false,'v1.6.3')+(PWA_EVT||IOS_WEB?item('앱 설치','installApp()',false,'홈 화면에 아이콘'):'')+'<div class="menudiv"></div>'+item('종료',"menuPanel='bye';render();setTimeout(()=>window.close(),1200)")}
     </nav></div>
    <div class="tfoot"><span>PROTOTYPE</span><i></i><span>V1.6.3</span><i></i><span>LI-ON GAMES</span></div>${panel?`<div class="menupanel"><button class="small" onclick="menuPanel=null;render()">✕ 닫기</button>${panel}</div>`:''}</div>`;}
 
