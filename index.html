@@ -331,7 +331,7 @@ input{font:inherit}
 
 /* =================== 모바일 (폭 760px 이하) =================== */
 @media (hover:none){.card:hover{transform:none}}
-@media (max-width:760px){
+@media (max-width:760px) and (pointer:fine){
  body{font-size:13.5px}
  #main{padding:14px 12px 80px}
  h2{font-size:22px;padding-left:18px}h3{font-size:16px}
@@ -387,7 +387,7 @@ input{font:inherit}
  .tfoot{left:0;right:0;bottom:2vh;justify-content:center;gap:10px;font-size:9px}
  .menupanel{left:0;right:0;top:0;bottom:0;border-radius:0;padding:16px 14px 30px}
 }
-@media (max-width:760px) and (max-height:700px){.tbanner .kingbox{display:none}.mitem{font-size:18px;padding:4px 0 4px 24px}.mitem.lead{font-size:24px}}
+@media (max-width:760px) and (max-height:700px) and (pointer:fine){.tbanner .kingbox{display:none}.mitem{font-size:18px;padding:4px 0 4px 24px}.mitem.lead{font-size:24px}}
 
 .tsnd{position:absolute;z-index:5;right:2.4vw;top:2.4vh;width:42px;height:42px;padding:0;display:grid;place-items:center;border-radius:50%;background:rgba(12,9,8,.55);border-color:rgba(184,146,90,.4);backdrop-filter:blur(3px)}
 .hud .hmenu{margin-right:4px}
@@ -439,20 +439,29 @@ input{font:inherit}
  .tfoot{display:none}.tsnd{width:34px;height:34px;top:2vh;right:2vw}
 }
 
-/* =================== 폰 세로일 때: 가로로 돌리라는 안내 =================== */
-#rotate{display:none}
-@media (orientation:portrait) and (max-width:600px) and (pointer:coarse){
- #rotate{display:flex;position:fixed;inset:0;z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:22px;
-  background:radial-gradient(ellipse at 50% 40%,#2a120a,#070504 70%);color:#e9dcc4;font:400 20px var(--serif);letter-spacing:.06em;text-align:center}
- #rotate .ph{width:64px;height:110px;border:3px solid #e0b862;border-radius:12px;position:relative;box-shadow:0 0 24px rgba(226,112,44,.4);animation:rot 2.2s ease-in-out infinite}
- #rotate .ph::after{content:"";position:absolute;left:50%;bottom:6px;width:16px;height:3px;margin-left:-8px;border-radius:2px;background:#e0b862}
- #rotate small{font:500 13px var(--sans);color:#a8987f;letter-spacing:0}
- @keyframes rot{0%,25%{transform:rotate(0)}55%,100%{transform:rotate(-90deg)}}
-}
+/* 세로로 든 폰: 가로로 회전 */
+html.rot body{font-size:12.5px}html.rot #top{min-height:0;padding:0 6px}html.rot .hud{padding:3px 0;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}html.rot .hud::-webkit-scrollbar{display:none}html.rot .hud .hlogo,html.rot .hver,html.rot .hseg .lab,html.rot .hgd .coins,html.rot .htr .lab{display:none}html.rot .hud .hmenu{width:30px;height:30px;min-height:0;flex:none}html.rot .hseg{flex:none;white-space:nowrap;height:30px;padding:0 8px;gap:5px}html.rot .hseg svg{width:15px;height:15px}html.rot .hseg .num{font-size:14px}html.rot .hloc .num{font-size:13px}html.rot .hseg .of{font-size:10px}html.rot .hhp .bar{width:40px;height:5px}html.rot .htr{flex:none;min-height:30px;padding:0 8px}html.rot .htr .kw{white-space:nowrap}html.rot #main{padding:8px 10px 24px;max-width:none}html.rot #main.wide{max-width:none}html.rot h2{font-size:18px;margin:2px 0 8px;padding:0 0 6px 16px}html.rot h3{font-size:14px;margin:10px 0 6px}html.rot .sub{font-size:11.5px}html.rot .panel{padding:8px 10px;margin-bottom:8px}html.rot button{padding:7px 11px;font-size:12px}html.rot button.small{padding:5px 8px;font-size:11px}html.rot .row{gap:7px}html.rot /* 상점: 왼쪽 판(화면 높이에 맞춤) + 오른쪽 상점 */
+ .shopgrid{grid-template-columns:auto 1fr!important;gap:12px}html.rot .boardcol{position:sticky!important;top:44px}html.rot .boardcol canvas{height:calc(100vw - 54px)!important;max-height:none;width:auto!important;max-width:none!important}html.rot .boardcol .legend{display:none}html.rot /* 전투: 판 높이 맞춤,html.rot 옆에 정보 */
+ #main.wide>.flex2{flex-wrap:nowrap;gap:12px}html.rot #main.wide>.flex2>div:first-child{flex:none}html.rot #main.wide>.flex2 canvas{height:calc(100vw - 92px)!important;width:auto!important;max-width:none!important}html.rot #main.wide>.flex2>div:last-child{min-width:0!important;flex:1}html.rot #main.wide>.flex2 .legend{display:none}html.rot /* 지도: 화면 높이에 맞춤 */
+ .flex2 svg{max-height:calc(100vw - 96px);width:auto!important}html.rot /* 카드 작게 */
+ .card,html.rot .slot{width:148px;padding:5px 5px 6px;gap:3px}html.rot .card .art{height:84px}html.rot .card .nm{font-size:13.5px}html.rot .card .meta{font-size:10px}html.rot .card .ds{font-size:10.5px;min-height:0;line-height:1.35}html.rot .card .seal{width:26px;height:26px;font-size:12px}html.rot .card .seal.hp{clip-path:path('M13 25 C4 19 1 14 1 8.5 C1 4 4.5 1 8.5 1 C10.5 1 12 2 13 4 C14 2 15.5 1 17.5 1 C21.5 1 25 4 25 8.5 C25 14 22 19 13 25Z')}html.rot .card .tier{min-width:18px;height:18px;font-size:10px}html.rot .kw{font-size:9.5px;padding:0 4px}html.rot .card.tr{width:200px}html.rot /* 창 */
+ .modal{align-items:center}html.rot .modal .box{max-height:94vw;padding:14px 16px;max-width:92vh}html.rot .modal .box .row{flex-wrap:nowrap;overflow-x:auto}html.rot .modal .box .row>.card{flex:none}html.rot .big{font-size:20px}html.rot /* 시작 화면 */
+ .tbanner{left:4vh;padding:3vw 0;width:min(340px,42vh)}html.rot .tbanner .kingbox{display:none}html.rot .tbanner .logo{width:78%}html.rot .tbanner .tagline{font-size:12px}html.rot .mitem{font-size:16px;padding:3px 0 3px 24px}html.rot .mitem.lead{font-size:21px}html.rot .menudiv{margin:2px 0}html.rot .menupanel{left:calc(4vh + min(340px,42vh) + 2vh);right:2vh;top:3vw;bottom:3vw;padding:14px 16px}html.rot .tfoot{display:none}html.rot .tsnd{width:34px;height:34px;top:2vw;right:2vh}
+
+html.rot,html.rot body{overflow:hidden}
+html.rot body{position:fixed;top:0;left:100vw;width:100vh;height:100vw;min-height:0;margin:0;transform-origin:0 0;transform:rotate(90deg);display:flex;flex-direction:column}
+html.rot #top{position:relative;flex:none}
+html.rot #main{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;width:100%;margin:0}
+html.rot .boardcol{top:0!important}
+html.rot .boardcol canvas{height:calc(100vw - 58px)!important}
 </style>
 </head>
 <body>
 <div id="top"></div><div id="main"></div><div id="modal"></div><div id="hover"></div>
+<script>(()=>{const f=()=>{const r=matchMedia('(pointer:coarse)').matches&&innerHeight>innerWidth&&Math.min(innerWidth,innerHeight)<=600;
+ if(document.documentElement.classList.contains('rot')!==r){document.documentElement.classList.toggle('rot',r);try{if(typeof render==='function'&&document.body)render();}catch(e){}}};
+ f();addEventListener('resize',f);addEventListener('orientationchange',()=>setTimeout(f,150));})();
+function LXY(e){return document.documentElement.classList.contains('rot')?[e.clientY,innerWidth-e.clientX]:[e.clientX,e.clientY];}</script>
 <script>/* ===== Li-On BGM: 음원 파일 없이 Web Audio로 실시간 연주 (D단조) ===== */
 const BGM=(()=>{
   let ctx=null,comp=null,master=null,revIn=null,noiseBuf=null,bus=null,cur='',timer=null,nextT=0,step=0,unlocked=false;
@@ -2290,7 +2299,7 @@ function render(){
       ${sel&&!targetMode?cardHTML(sel,`<button class="small" onclick="sell(${sel.uid});selUid=null;render()">판매 +1</button><button class="small" onclick="selUid=null;render()">선택 해제</button>`):''}
       ${handHTML}</div></div>`;
     m.innerHTML=h;drawBoard();
-    const cv=$('#board'),pt=e=>{const r=cv.getBoundingClientRect();return hexAt((e.clientX-r.left)*BW/r.width,(e.clientY-r.top)*BH/r.height);};
+    const cv=$('#board'),pt=e=>{const r=cv.getBoundingClientRect();return document.documentElement.classList.contains('rot')?hexAt((e.clientY-r.top)*BW/r.height,(r.right-e.clientX)*BH/r.width):hexAt((e.clientX-r.left)*BW/r.width,(e.clientY-r.top)*BH/r.height);};
     cv.onclick=e=>{const p=pt(e);if(p)clickCell(p[0],p[1]);if(matchMedia('(hover:none)').matches)showHover(e,p);};cv.onmousemove=e=>showHover(e,pt(e));cv.onmouseleave=()=>{$('#hover').style.display='none';window.HOV=null;window.HOVK='';if(view==='shop')drawBoard();};return;}
   if(view==='battle'){
     let h=`<h2>전투 — ${S.cur.type==='보스'?S.cur.name:S.cur.type}${S.cur.type==='엘리트'?` · ${S.cur.mod.name}`:''}</h2><div class="flex2"><div>${boardCV()}
@@ -2300,7 +2309,7 @@ function render(){
      <div class="panel" id="tug"></div><div class="panel"><b>처치 기록</b><div id="feed" style="margin-top:6px"></div></div>
      <details class="panel" id="det" ontoggle="drawStats()"><summary>상세 분석 (준 피해·받은 피해·처치)</summary><div id="stats" style="margin-top:8px"></div></details>`;
     m.innerHTML=h+'</div></div>';B.feedN=-1;drawBoard();drawStats();anKick();
-    const cv=$('#board'),pt=e=>{const r=cv.getBoundingClientRect();return hexAt((e.clientX-r.left)*BW/r.width,(e.clientY-r.top)*BH/r.height);};
+    const cv=$('#board'),pt=e=>{const r=cv.getBoundingClientRect();return document.documentElement.classList.contains('rot')?hexAt((e.clientY-r.top)*BW/r.height,(r.right-e.clientX)*BH/r.width):hexAt((e.clientX-r.left)*BW/r.width,(e.clientY-r.top)*BH/r.height);};
     cv.onclick=e=>{const p=pt(e);if(p)clickCell(p[0],p[1]);if(matchMedia('(hover:none)').matches)showHover(e,p);};cv.onmousemove=e=>showHover(e,pt(e));cv.onmouseleave=()=>{$('#hover').style.display='none';};return;}
   if(view==='result'){const R=S.lastResult;
     let h=`<h2 style="font-size:28px;color:${R.win?'#f2c45a':'#ff6b5e'}">${R.win?'승리':'패배'} <span class="sub">· 전투 시간 ${R.time}초</span></h2><p>${R.win?(R.type==='보스'?'막 보스 격파. 체력 +10':''):R.type==='보스'?`<span class="warn">체력 -${R.dmg}</span> (보스를 많이 남길수록 커져) — 보스는 다시 도전할 수 없어. 보물도 회복도 없이 다음 막으로 끌려간다.`:`<span class="warn">체력 -${R.dmg}</span> (살아남은 적이 많을수록 커져: 남은 적 티어 합, 최대 4+막×6, 에 막×2를 더함) · 패배 위로금으로 골드 +1`}${R.gold?` · 다음 턴 골드 +${R.gold}`:''}</p>`;
@@ -2380,11 +2389,11 @@ function statsTable(st){const mk=s=>`<table class="st"><tr><th>${s===0?'아군':
   return mk(0)+'<div style="height:8px"></div>'+mk(1);}
 function showHover(e,p){const hv=$('#hover');const pk=p?p.join():'';if(view==='shop'&&pk!==window.HOVK){window.HOVK=pk;window.HOV=p;drawBoard();}if(!p){hv.style.display='none';return;}let u=null;
   if(view==='battle'&&B)u=B.units.find(o=>!o.dead&&o.x===p[0]&&o.y===p[1]);
-  else{const f=occAt(p[0],p[1]);if(f)u={...f,side:0};const seen=S.peek||has('scope');if(!u){const en=S.enemies.find(o=>o.x===p[0]&&o.y===p[1]);if(en&&seen)u={...en,side:1};else if(en&&S.cur.type!=='보스'){hv.innerHTML='<b>[적] ???</b><br><span class=sub>정찰하면 정체가 보여</span>';hv.style.display='block';hv.style.left=(e.clientX+14)+'px';hv.style.top=(e.clientY+14)+'px';return;}}}
+  else{const f=occAt(p[0],p[1]);if(f)u={...f,side:0};const seen=S.peek||has('scope');if(!u){const en=S.enemies.find(o=>o.x===p[0]&&o.y===p[1]);if(en&&seen)u={...en,side:1};else if(en&&S.cur.type!=='보스'){hv.innerHTML='<b>[적] ???</b><br><span class=sub>정찰하면 정체가 보여</span>';hv.style.display='block';hv.style.left=(LXY(e)[0]+14)+'px';hv.style.top=(LXY(e)[1]+14)+'px';return;}}}
   const M=view==='battle'&&B?{T:B.T,P:B.P,G:B.G}:S.map,t=M.T[p[1]][p[0]];const terr=t==='R'?'바위':t==='W'?'물':t==='F'?'숲 (여기 선 유닛은 붙어 있는 적에게만 보임)':t==='L'?'용암 (서 있으면 1초마다 피해, 비행은 무시)':t==='V'?'심연':M.P[p[1]][p[0]]>=0?(M.G[p[1]][p[0]]?'언덕 입구':'언덕'):'평지';
   if(!u)hv.innerHTML=`<span class="sub">${terr}</span>`;
   else{const d=DEF[u.key];hv.innerHTML=`<div style="display:flex;gap:8px;align-items:center"><img src="${portrait(u.key).url}" width="44" height="44" style="border-radius:6px"><div><b style="color:${RC[u.race]||'#ddd'}">${u.side===1?'[적] ':''}${u.golden?(u.side===1?'정예 ':'황금 '):''}${d.name}</b><br>${stars(d.tier)}</div></div>${u.atk} / ${Math.max(0,u.hp)}${u.maxhp?' (최대 '+u.maxhp+')':''}${u.sh>0?' · 보호막 '+u.sh:''}${u.psn>0?' · 독 '+u.psn:''}${u.stun>0?' · 기절':''} · 사거리 ${u.range||d.range+(u.rangeB||0)} · 공속 ${aspd(d)} · 이속 ${mspd(d)}<br><span class="sub">${d.desc.replace(/<[^>]+>/g,'')}</span><br><span class="sub">지형: ${terr}</span>`;}
-  hv.style.display='block';hv.style.left=(e.clientX+14)+'px';hv.style.top=(e.clientY+14)+'px';}
+  hv.style.display='block';hv.style.left=(LXY(e)[0]+14)+'px';hv.style.top=(LXY(e)[1]+14)+'px';}
 /* ================= 전투 연출 v0.95 (판정 로직과 분리: 이벤트만 받아서 그림) ================= */
 const K=2,Z=1.22,TEAM=['#4cb8f0','#ff4a3d'],TEAMA=['rgba(76,184,240,','rgba(255,74,61,'];
 const AN={off:false,delay:0,floats:[],proj:[],parts:[],deaths:[],slashes:[],amb:[],rs:new Map(),shake:0,startAt:-1e9,end:null,raf:null,st:null,last:0};
@@ -2568,11 +2577,9 @@ window.__t={ev:s=>eval(s),castPending,castAllPending,castSpell,cancelTarget,rest
 render();loadThrone();
 </script>
 <script>(()=>{const r=render;window.render=function(){const x=r.apply(this,arguments);try{BGM.sync()}catch(e){}return x;};})();</script>
-<div id="rotate"><div class="ph"></div><div>폰을 가로로 돌려줘</div><small>Li-On은 가로 화면 전용이야</small></div>
-<script>(()=>{const touch=matchMedia('(pointer:coarse)').matches,ios=/iphone|ipad|ipod/i.test(navigator.userAgent);if(!touch||ios)return;
- const go=async()=>{try{if(!document.fullscreenElement&&document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen({navigationUI:'hide'});}catch(e){}
-  try{if(screen.orientation&&screen.orientation.lock)await screen.orientation.lock('landscape');}catch(e){}};
- addEventListener('pointerup',go,{capture:true});})();</script>
+<script>(()=>{if(!matchMedia('(pointer:coarse)').matches||/iphone|ipad|ipod/i.test(navigator.userAgent))return;
+ addEventListener('pointerup',async()=>{try{if(!document.fullscreenElement&&document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen({navigationUI:'hide'});}catch(e){}
+  try{if(screen.orientation&&screen.orientation.lock)await screen.orientation.lock('landscape');}catch(e){}},{capture:true});})();</script>
 <script>try{if('serviceWorker'in navigator&&location.protocol==='https:'&&/github\.io$/.test(location.hostname))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}catch(e){}</script>
 </body>
 </html>
