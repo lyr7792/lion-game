@@ -464,6 +464,19 @@ table.st.sb td.dl i{position:absolute;right:8px;bottom:5px;height:4px;border-rad
 .mappanel{flex:1 1 700px;min-width:0;max-width:1240px}
 .mapside{flex:0 1 320px;max-width:340px}
 
+/* ---------- 드래그 · 정보 창 · 툴팁 가림 수정 ---------- */
+.card:hover,.card:focus-within{z-index:40}
+.row{position:relative}
+#dragghost{position:fixed;z-index:80;display:none;width:62px;height:62px;margin:-31px 0 0 -31px;border-radius:50%;object-fit:cover;pointer-events:none;border:3px solid #8fd6ff;box-shadow:0 0 0 2px #000,0 10px 24px rgba(0,0,0,.7),0 0 18px rgba(120,200,255,.6);opacity:.95}
+#board{cursor:grab}#board:active{cursor:grabbing}
+.infobox{max-width:360px!important;padding:20px 22px 16px!important}
+.card.big{width:300px;margin:0 auto}.card.big .art{height:230px}.card.big .nm{font-size:22px}.card.big .ds{font-size:14px;min-height:0}.card.big .meta{font-size:12.5px}
+.card.big .seal{width:44px;height:44px;font-size:19px}
+.card.big .seal.hp{clip-path:path('M22 43 C8 33 1 24 1 14.5 C1 6.5 7 1 14 1 C17.5 1 20.5 3 22 6 C23.5 3 26.5 1 30 1 C37 1 43 6.5 43 14.5 C43 24 36 33 22 43Z')}
+.card.big:hover{transform:none}
+@media (max-height:520px){.card.big{width:min(300px,70vw)}.card.big .art{height:120px}.infobox{max-height:94vh}}
+html.rot .card.big .art{height:120px}html.rot .card.big{width:min(300px,70vh)}
+
 /* 세로로 든 폰: 가로로 회전 */
 html.rot body{font-size:12.5px}html.rot #top{min-height:0;padding:0 6px}html.rot .hud{padding:3px 0;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}html.rot .hud::-webkit-scrollbar{display:none}html.rot .hud .hlogo,html.rot .hver,html.rot .hseg .lab,html.rot .hgd .coins,html.rot .htr .lab{display:none}html.rot .hud .hmenu{width:30px;height:30px;min-height:0;flex:none}html.rot .hseg{flex:none;white-space:nowrap;height:30px;padding:0 8px;gap:5px}html.rot .hseg svg{width:15px;height:15px}html.rot .hseg .num{font-size:14px}html.rot .hloc .num{font-size:13px}html.rot .hseg .of{font-size:10px}html.rot .hhp .bar{width:40px;height:5px}html.rot .htr{flex:none;min-height:30px;padding:0 8px}html.rot .htr .kw{white-space:nowrap}html.rot #main{padding:8px 10px 24px;max-width:none}html.rot #main.wide{max-width:none}html.rot h2{font-size:18px;margin:2px 0 8px;padding:0 0 6px 16px}html.rot h3{font-size:14px;margin:10px 0 6px}html.rot .sub{font-size:11.5px}html.rot .panel{padding:8px 10px;margin-bottom:8px}html.rot button{padding:7px 11px;font-size:12px}html.rot button.small{padding:5px 8px;font-size:11px}html.rot .row{gap:7px}html.rot /* 상점: 왼쪽 판(화면 높이에 맞춤) + 오른쪽 상점 */
  .shopgrid{grid-template-columns:auto 1fr!important;gap:12px}html.rot .boardcol{position:sticky!important;top:44px}html.rot .boardcol canvas{width:min(54vh,calc((100vw - 54px)*var(--ar)))!important;height:auto!important;max-height:none;max-width:none!important}html.rot .boardcol .legend{display:none}html.rot /* 전투: 판 높이 맞춤,html.rot 옆에 정보 */
@@ -1480,6 +1493,7 @@ function terraApply(x,y){const M=S.map;if(!M||!terraMode)return;if(y<PZ0||y>PZ1|
 function applyTarget(uid){
   const u=S.field.find(x=>x.uid===uid);if(!u)return;
   if(targetMode==='forge'){const a=S.cur.act;gain(u,3*a,4*a,'대장간');targetMode=null;view='shop';render();return;}
+  if(SPELLS[targetMode]){const why=spellBlock(targetMode,u);if(why){toast(why+' — 다른 유닛을 골라');return;}}
   const k=targetMode,bi=targetBi;targetMode=null;targetBi=-1;
   if(SPELLS[k]){const i=S.bag[bi]===k?bi:S.bag.indexOf(k);if(i<0){render();return;}S.bag.splice(i,1);const n=castTimes();for(let j=0;j<n;j++)doSpell(k,u);afterCast(k);if(S.map){validDeploy();autoKeep();}}
   render();
@@ -1610,6 +1624,33 @@ function autoPlace(u){const M=S.map,d=DEF[u.key],ranged=d.range>=2&&!d.waterOnly
     if(x===undefined&&(hk(u,'매복')||u.key==='engineer'))x=xs.find(a=>M.T[y][a]==='F'||nb(a,y).some(([p,q])=>M.T[q][p]==='R'));
     if(x===undefined)x=xs.find(a=>M.T[y][a]!=='W'&&M.T[y][a]!=='V'||d.waterOnly);if(x!==undefined){S.deploy[u.uid]={x,y};return;}}}
 function autoDeploy(){S.deploy={};for(const u of[...S.field].sort((a,b)=>DEF[b.key].range-DEF[a.key].range))autoPlace(u);render();}
+
+/* ===== v1.6.3 추가: 유닛 정보 창 · 드래그 배치 · 주문 대상 제한 ===== */
+function spellBlock(k,u){const sp=SPELLS[k];if(!sp||!u)return null;const d=DEF[u.key];
+  if(sp.kw&&kwsOf(u).includes(sp.kw))return `${d.name}은(는) 이미 [${sp.kw}]이 있어`;
+  if(k==='longshot'&&d.range+(u.rangeB||0)>=5)return `${d.name}의 사거리는 이미 최대(5)야`;
+  return null;}
+function infoBox(inner){$('#modal').innerHTML=`<div class="modal" onclick="if(event.target===this)this.remove()"><div class="box infobox">${inner}<div class="row" style="justify-content:center;margin-top:12px"><button onclick="this.closest('.modal').remove()">닫기</button></div></div></div>`;}
+function unitInfo(uid){if(modalFn)return;const u=S.field.find(x=>x.uid===uid)||S.hand.find(x=>x.uid===uid);if(!u)return;
+  const inField=S.field.includes(u);infoBox(cardHTML(u,inField&&view==='shop'?`<button class="small" onclick="sell(${u.uid});this.closest('.modal').remove()">판매 +1</button>`:'','big'));}
+function unitInfoKey(key){if(modalFn||!DEF[key])return;const d=DEF[key];infoBox(cardHTML({key,atk:d.atk,hp:d.hp,golden:false,race:d.race,taunt:!!d.taunt},'','big'));}
+function unitInfoB(b){if(modalFn||!b)return;const o={key:b.key,race:b.race,golden:b.golden,taunt:b.taunt,hp:b.maxhp};o.atk=b.atk-ra(o);
+  infoBox(`<div class="sub" style="text-align:center;margin-bottom:8px;color:${TEAM[b.side]}">${b.side?'적':'아군'} · 현재 체력 <b>${Math.max(0,b.hp)}</b> / ${b.maxhp}${b.dead?' · 쓰러짐':''}</div>`+cardHTML(o,'','big'));}
+function dragGhost(u){let g=document.getElementById('dragghost');if(!g){g=document.createElement('img');g.id='dragghost';document.body.appendChild(g);}g.src=portrait(u.key).url;g.style.display='block';return g;}
+function bindDrag(cv,pt){let st=null;cv.style.touchAction='none';const oc=cv.onclick;
+  cv.onclick=e=>{if(cv._skip){cv._skip=false;return;}oc&&oc(e);};
+  const mark=(p,u)=>{if(!p)return;const g=cv.getContext('2d'),k=cv.width/BW,ok=p[1]>=PZ0&&p[1]<=PZ1&&placeable(S.map,u.key,p[0],p[1],u);
+    g.save();g.setTransform(k,0,0,k,0,0);hexPath(g,cx(p[0],p[1]),cy(p[0],p[1]),HR-3);g.fillStyle=ok?'rgba(120,200,255,.18)':'rgba(255,90,70,.18)';g.fill();g.strokeStyle=ok?'#8fd6ff':'#ff6a5a';g.lineWidth=3;g.stroke();g.restore();};
+  cv.onpointerdown=e=>{if(targetMode||terraMode||e.button>0)return;const p=pt(e);if(!p)return;const u=occAt(p[0],p[1]);if(!u)return;
+    st={u,p,x:e.clientX,y:e.clientY,moved:false};try{cv.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault();};
+  cv.onpointermove=e=>{if(!st)return;const dx=e.clientX-st.x,dy=e.clientY-st.y;
+    if(!st.moved&&dx*dx+dy*dy>49){st.moved=true;dragGhost(st.u);}
+    if(st.moved){const g=document.getElementById('dragghost'),q=LXY(e);g.style.left=q[0]+'px';g.style.top=q[1]+'px';const p=pt(e);window.HOV=null;drawBoard();mark(p,st.u);}};
+  const end=e=>{if(!st)return;const s=st;st=null;cv._skip=true;const g=document.getElementById('dragghost');if(g)g.style.display='none';try{cv.releasePointerCapture(e.pointerId)}catch(_){}
+    if(!s.moved){unitInfo(s.u.uid);return;}
+    const p=pt(e);if(!p||(p[0]===s.p[0]&&p[1]===s.p[1])){drawBoard();return;}
+    const keep=selUid;selUid=s.u.uid;clickCell(p[0],p[1]);selUid=null;if(keep!==s.u.uid)selUid=keep;render();};
+  cv.onpointerup=end;cv.onpointercancel=e=>{if(!st)return;st=null;const g=document.getElementById('dragghost');if(g)g.style.display='none';drawBoard();};}
 function clickCell(x,y){if(view!=='shop'||!S.map)return;if(terraMode){terraApply(x,y);return;}const here=occAt(x,y);if(targetMode&&here){applyTarget(here.uid);return;}if(here&&(!selUid||selUid===here.uid)){selUid=selUid===here.uid?null:here.uid;render();return;}if(!selUid)return;
   const u=S.field.find(a=>a.uid===selUid);if(!u)return;if(y<PZ0||y>PZ1||!placeable(S.map,u.key,x,y,u)){toast('여기엔 놓을 수 없어');return;}
   if(here&&here!==u){const p=S.deploy[u.uid];if(p)S.deploy[here.uid]={...p};else delete S.deploy[here.uid];}S.deploy[u.uid]={x,y};render();}
@@ -2320,13 +2361,13 @@ function render(){
     h=`<div class="shopgrid"><div class="boardcol">${boardCV()}
       <div class="legend sub" style="margin-top:6px"><span style="background:#26262d"></span>평지<span style="background:#4a3b28"></span>언덕(밝은 칸이 입구)<span style="background:#14283f"></span>물<span style="background:#050506"></span>바위<span style="background:#1c3a22"></span>숲(붙어야 보임)<span style="background:#7a2a0c"></span>용암(밟으면 피해)<span style="background:#000"></span>심연</div></div>
       <div class="shopcol">${h}
-      <div class="panel"><b>필드 ${S.field.length}/${fieldCap()}</b> <span class="sub">· 왼쪽 5줄이 내 진영. 유닛을 누르면 선택, 빈 칸을 누르면 이동, 다른 유닛을 누르면 자리 바꿈. ${fogBoss?'<span class="warn">보스 진형은 안개 속</span>':seen?'적 정찰 완료':'적은 위치만 보여 (정찰하면 정체가 보임)'}</span>
-      <div style="margin-top:8px">${S.field.map(u=>{const d=DEF[u.key],on=!!S.deploy[u.uid];return `<div onclick="${targetMode?`applyTarget(${u.uid})`:`selUid=${selUid===u.uid?'null':u.uid};render()`}" style="display:flex;gap:7px;align-items:center;padding:3px 5px;border-radius:6px;cursor:pointer;${selUid===u.uid?'background:#2a2228;':''}"><img src="${portrait(u.key).url}" width="26" height="26" style="border-radius:4px"><span style="color:${RC[u.race]};min-width:118px">${u.golden?'황금 ':''}${d.name}</span><b>${u.atk}/${u.hp}</b><span class="sub">${on?'':'<span class=warn>놓을 곳 없음</span>'}</span></div>`;}).join('')||'<span class="sub">필드가 비어 있어</span>'}</div></div>
+      <div class="panel"><b>필드 ${S.field.length}/${fieldCap()}</b> <span class="sub">· 왼쪽 5줄이 내 진영. 유닛을 <b>끌어서</b> 옮기고, 다른 유닛 위에 놓으면 자리가 바뀌어. 유닛을 누르면 정보가 보여. ${fogBoss?'<span class="warn">보스 진형은 안개 속</span>':seen?'적 정찰 완료':'적은 위치만 보여 (정찰하면 정체가 보임)'}</span>
+      <div style="margin-top:8px">${S.field.map(u=>{const d=DEF[u.key],on=!!S.deploy[u.uid];return `<div onclick="${targetMode?`applyTarget(${u.uid})`:`selUid=${selUid===u.uid?'null':u.uid};render()`}" style="display:flex;gap:7px;align-items:center;padding:3px 5px;border-radius:6px;cursor:pointer;${selUid===u.uid?'background:#2a2228;':''}"><img src="${portrait(u.key).url}" width="34" height="34" style="border-radius:50%;cursor:zoom-in;border:2px solid ${RC[u.race]}" onclick="event.stopPropagation();unitInfo(${u.uid})"><span style="color:${RC[u.race]};min-width:118px">${u.golden?'황금 ':''}${d.name}</span><b>${u.atk}/${u.hp}</b><span class="sub">${on?'':'<span class=warn>놓을 곳 없음</span>'}${targetMode&&SPELLS[targetMode]&&spellBlock(targetMode,u)?' <span class=warn>이미 최대</span>':''}</span></div>`;}).join('')||'<span class="sub">필드가 비어 있어</span>'}</div></div>
       ${sel&&!targetMode?cardHTML(sel,`<button class="small" onclick="sell(${sel.uid});selUid=null;render()">판매 +1</button><button class="small" onclick="selUid=null;render()">선택 해제</button>`):''}
       ${handHTML}</div></div>`;
     m.innerHTML=h;drawBoard();
     const cv=$('#board'),pt=e=>{const r=cv.getBoundingClientRect();return document.documentElement.classList.contains('rot')?hexAt((e.clientY-r.top)*BW/r.height,(r.right-e.clientX)*BH/r.width):hexAt((e.clientX-r.left)*BW/r.width,(e.clientY-r.top)*BH/r.height);};
-    cv.onclick=e=>{const p=pt(e);if(p)clickCell(p[0],p[1]);if(matchMedia('(hover:none)').matches)showHover(e,p);};cv.onmousemove=e=>showHover(e,pt(e));cv.onmouseleave=()=>{$('#hover').style.display='none';window.HOV=null;window.HOVK='';if(view==='shop')drawBoard();};return;}
+    cv.onclick=e=>{const p=pt(e);if(p)clickCell(p[0],p[1]);if(matchMedia('(hover:none)').matches)showHover(e,p);};cv.onmousemove=e=>showHover(e,pt(e));cv.onmouseleave=()=>{$('#hover').style.display='none';window.HOV=null;window.HOVK='';if(view==='shop')drawBoard();};bindDrag(cv,pt);return;}
   if(view==='battle'){
     let h=`<h2>전투 — ${S.cur.type==='보스'?S.cur.name:S.cur.type}${S.cur.type==='엘리트'?` · ${S.cur.mod.name}`:''}</h2><div class="flex2"><div>${boardCV()}
      <div class="legend sub" style="margin-top:6px"><span style="background:${TEAM[0]}"></span>아군<span style="background:${TEAM[1]}"></span>적<span style="background:#806440"></span>언덕(점선 칸이 입구)<span style="background:#1f5583"></span>물<span style="background:#4a4852"></span>바위<span style="background:#1c3a22"></span>숲<span style="background:#7a2a0c"></span>용암</div></div><div style="flex:1;min-width:320px;max-width:460px">`;
@@ -2336,7 +2377,7 @@ function render(){
      <details class="panel" id="det" ontoggle="drawStats()"><summary>상세 분석 (준 피해·받은 피해·처치)</summary><div id="stats" style="margin-top:8px"></div></details>`;
     m.innerHTML=h+'</div></div>';B.feedN=-1;drawBoard();drawStats();anKick();
     const cv=$('#board'),pt=e=>{const r=cv.getBoundingClientRect();return document.documentElement.classList.contains('rot')?hexAt((e.clientY-r.top)*BW/r.height,(r.right-e.clientX)*BH/r.width):hexAt((e.clientX-r.left)*BW/r.width,(e.clientY-r.top)*BH/r.height);};
-    cv.onclick=e=>{const p=pt(e);if(p)clickCell(p[0],p[1]);if(matchMedia('(hover:none)').matches)showHover(e,p);};cv.onmousemove=e=>showHover(e,pt(e));cv.onmouseleave=()=>{$('#hover').style.display='none';};return;}
+    cv.onclick=e=>{const p=pt(e);if(p)clickCell(p[0],p[1]);if(matchMedia('(hover:none)').matches)showHover(e,p);};cv.onmousemove=e=>showHover(e,pt(e));cv.onmouseleave=()=>{$('#hover').style.display='none';};cv.addEventListener('click',e=>{const p=pt(e);if(!p||!B)return;const b=B.units.find(o=>!o.dead&&o.x===p[0]&&o.y===p[1]);if(b&&(b.side===0||S.peek||has('scope')||B.tick>0))unitInfoB(b);});return;}
   if(view==='result'){const R=S.lastResult;
     let h=`<h2 style="font-size:28px;color:${R.win?'#f2c45a':'#ff6b5e'}">${R.win?'승리':'패배'} <span class="sub">· 전투 시간 ${R.time}초</span></h2><p>${R.win?(R.type==='보스'?'막 보스 격파. 체력 +10':''):R.type==='보스'?`<span class="warn">체력 -${R.dmg}</span> (보스를 많이 남길수록 커져) — 보스는 다시 도전할 수 없어. 보물도 회복도 없이 다음 막으로 끌려간다.`:`<span class="warn">체력 -${R.dmg}</span> (살아남은 적이 많을수록 커져: 남은 적 티어 합, 최대 4+막×6, 에 막×2를 더함) · 패배 위로금으로 골드 +1`}${R.gold?` · 다음 턴 골드 +${R.gold}`:''}</p>`;
     if(S.reward)h+=`<div class="panel"><h3 style="margin-top:0">전투 보상 (하나 선택)</h3><div class="row">${S.reward.map(r=>`<button class="primary" onclick="takeReward('${r.k}')">${r.t}</button>`).join('')}</div></div>`;
@@ -2412,7 +2453,7 @@ function ev_gamble(){const b=Math.floor(S.gold/2);if(rng()<.5)S.gold+=b*2;else S
 function ev_altar(a){S.hp-=a*4;if(S.hp<=0){view='over';render();return;}
   if(a>=3){const t=pick(S.field.filter(u=>!u.golden));if(t){const d=DEF[t.key];t.atk+=d.atk;t.hp+=d.hp;t.golden=true;}leaveNode();}else{leaveNode();discover('핏빛 제단: 하나를 골라',Math.min(6,S.shopLv+a));}}
 function statsTable(st){const mk=s=>{const L=st.filter(u=>u.side===s).sort((a,b)=>b.dealt-a.dealt),mx=Math.max(1,...L.map(u=>u.dealt));
-  return `<table class="st sb"><tr><th>${s===0?'아군':'적'}</th><th>준 피해</th><th>받은 피해</th><th>처치</th><th>생존</th></tr>${L.map(u=>`<tr class="${u.dead?'dead':''}"><td><span class="stn">${u.key?`<img src="${portrait(u.key).url}" style="border-color:${TEAM[s]}">`:''}<span>${u.golden?(s===1?'정예 ':'황금 '):''}${u.name}${u.dead?' ✝':''}</span></span></td><td class="dl"><b>${u.dealt}</b><i style="width:${(100*u.dealt/mx).toFixed(0)}%;background:${TEAM[s]}"></i></td><td>${u.taken}</td><td>${u.kills}</td><td>${u.t}초</td></tr>`).join('')}</table>`;};
+  return `<table class="st sb"><tr><th>${s===0?'아군':'적'}</th><th>준 피해</th><th>받은 피해</th><th>처치</th><th>생존</th></tr>${L.map(u=>`<tr class="${u.dead?'dead':''}"><td><span class="stn">${u.key?`<img src="${portrait(u.key).url}" style="border-color:${TEAM[s]};cursor:zoom-in" onclick="unitInfoKey('${u.key}')">`:''}<span>${u.golden?(s===1?'정예 ':'황금 '):''}${u.name}${u.dead?' ✝':''}</span></span></td><td class="dl"><b>${u.dealt}</b><i style="width:${(100*u.dealt/mx).toFixed(0)}%;background:${TEAM[s]}"></i></td><td>${u.taken}</td><td>${u.kills}</td><td>${u.t}초</td></tr>`).join('')}</table>`;};
   return mk(0)+'<div style="height:12px"></div>'+mk(1);}
 function showHover(e,p){const hv=$('#hover');const pk=p?p.join():'';if(view==='shop'&&pk!==window.HOVK){window.HOVK=pk;window.HOV=p;drawBoard();}if(!p){hv.style.display='none';return;}let u=null;
   if(view==='battle'&&B)u=B.units.find(o=>!o.dead&&o.x===p[0]&&o.y===p[1]);
