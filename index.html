@@ -438,6 +438,17 @@ input{font:inherit}
  .menupanel{left:calc(4vw + min(340px,42vw) + 2vw);right:2vw;top:3vh;bottom:3vh;padding:14px 16px}
  .tfoot{display:none}.tsnd{width:34px;height:34px;top:2vh;right:2vw}
 }
+
+/* =================== 폰 세로일 때: 가로로 돌리라는 안내 =================== */
+#rotate{display:none}
+@media (orientation:portrait) and (max-width:600px) and (pointer:coarse){
+ #rotate{display:flex;position:fixed;inset:0;z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:22px;
+  background:radial-gradient(ellipse at 50% 40%,#2a120a,#070504 70%);color:#e9dcc4;font:400 20px var(--serif);letter-spacing:.06em;text-align:center}
+ #rotate .ph{width:64px;height:110px;border:3px solid #e0b862;border-radius:12px;position:relative;box-shadow:0 0 24px rgba(226,112,44,.4);animation:rot 2.2s ease-in-out infinite}
+ #rotate .ph::after{content:"";position:absolute;left:50%;bottom:6px;width:16px;height:3px;margin-left:-8px;border-radius:2px;background:#e0b862}
+ #rotate small{font:500 13px var(--sans);color:#a8987f;letter-spacing:0}
+ @keyframes rot{0%,25%{transform:rotate(0)}55%,100%{transform:rotate(-90deg)}}
+}
 </style>
 </head>
 <body>
@@ -2557,6 +2568,11 @@ window.__t={ev:s=>eval(s),castPending,castAllPending,castSpell,cancelTarget,rest
 render();loadThrone();
 </script>
 <script>(()=>{const r=render;window.render=function(){const x=r.apply(this,arguments);try{BGM.sync()}catch(e){}return x;};})();</script>
+<div id="rotate"><div class="ph"></div><div>폰을 가로로 돌려줘</div><small>Li-On은 가로 화면 전용이야</small></div>
+<script>(()=>{const touch=matchMedia('(pointer:coarse)').matches,ios=/iphone|ipad|ipod/i.test(navigator.userAgent);if(!touch||ios)return;
+ const go=async()=>{try{if(!document.fullscreenElement&&document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen({navigationUI:'hide'});}catch(e){}
+  try{if(screen.orientation&&screen.orientation.lock)await screen.orientation.lock('landscape');}catch(e){}};
+ addEventListener('pointerup',go,{capture:true});})();</script>
 <script>try{if('serviceWorker'in navigator&&location.protocol==='https:'&&/github\.io$/.test(location.hostname))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}catch(e){}</script>
 </body>
 </html>
