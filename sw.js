@@ -1,5 +1,5 @@
 // Li-On 서비스 워커: 한 번 받으면 오프라인에서도 실행. 게임 파일은 항상 새 버전 먼저 확인.
-const CACHE = 'lion-cache-v12';
+const CACHE = 'lion-cache-v13';
 const CORE = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'apple-touch-icon.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
